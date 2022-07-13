@@ -26,3 +26,5 @@
 
 `npm run start` — запускает сервер   
 `npm run dev` — запускает сервер с hot-reload
+
+## Сайт доступен для просмотра: https://katyatopchieva.github.io/react-mesto-auth/

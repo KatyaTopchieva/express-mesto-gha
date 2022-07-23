@@ -6,7 +6,7 @@ module.exports.getUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getUserId = (req, res) => {
   User.findById(req.user._id).select('+password')
     .then((user) => {
       res.send({ data: user });

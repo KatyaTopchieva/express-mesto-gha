@@ -3,7 +3,9 @@ const Card = require('../models/card');
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then(cards => res.send({ data: cards }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      console.log(`Ошибка: ${err}`)
+    });
 };
 
 module.exports.createCard = (req, res) => {
@@ -20,11 +22,6 @@ module.exports.deleteCard = (req, res) => {
   const { id } = req.params;
 
   Card.findById(id)
-    .then((card) => {
-      if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) {
-      return Card.findByIdAndRemove(id);
-      }
-    })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       console.log(`Ошибка: ${err}`)
@@ -52,7 +49,7 @@ module.exports.deletelikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      res.status(STATUS_OK).send({ data: card });
+      res.send({ data: card });
     })
     .catch((err) => {
       console.log(`Ошибка: ${err}`)

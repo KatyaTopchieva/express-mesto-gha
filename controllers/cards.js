@@ -1,10 +1,14 @@
 const Card = require('../models/card');
+const NotFound = require('../errors/not-found');
+const BadRequest = require('../errors/bad-request');
+const DefoultError = require('../errors/defoult-error');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then(cards => res.send({ data: cards }))
     .catch((err) => {
-      console.log(`Ошибка: ${err}`)
+      console.log(`Ошибка: ${err}`);
+      throw new DefoultError(err.message);
     });
 };
 
@@ -14,7 +18,8 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner: req.user._id })
   .then((user) => res.send({ data: user }))
   .catch((err) => {
-    console.log(`Ошибка: ${err}`)
+    console.log(`Ошибка: ${err}`);
+    throw new BadRequest(err.message);
   });
 };
 
@@ -22,6 +27,15 @@ module.exports.deleteCard = (req, res) => {
   const { id } = req.params;
 
   Card.findById(id)
+  .then((card) => {
+    if (!card) {
+      throw new NotFound('Такой карточки не существует!');
+    }
+    if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) {
+      throw new BadRequest('Невозможно удалить данную карточку');
+    }
+    return Card.findByIdAndRemove(id);
+  })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       console.log(`Ошибка: ${err}`)
@@ -35,6 +49,9 @@ module.exports.likeCard = (req, res) => {
     { new: true },
   )
   .then((card) => {
+    if (!card) {
+      throw new NotFound('Такой карточки не существует!');
+    }
     res.send({ data: card });
   })
   .catch((err) => {
@@ -49,6 +66,9 @@ module.exports.deletelikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
+      if (!card) {
+        throw new NotFound('Такой карточки не существует!');
+      }
       res.send({ data: card });
     })
     .catch((err) => {

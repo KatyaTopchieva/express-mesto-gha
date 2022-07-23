@@ -1,4 +1,6 @@
 const User = require('../models/user');
+const NotFound = require('../errors/not-found');
+const BadRequest = require('../errors/bad-request');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -7,8 +9,11 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUserId = (req, res) => {
-  User.findById(req.user._id).select('+password')
+  User.findById(req.user._id)//.select('+password')
     .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь не найден');
+      }
       res.send({ data: user });
     })
     .catch(() => res.send({ message: 'Произошла ошибка' }));
@@ -22,13 +27,13 @@ module.exports.createUser = (req, res) => {
   User.findOne({ name })
   .then((user) => {
     if (user) {
-      throw new Error('Такой пользователь уже существует!');
+      throw new NotFound ('Такой пользователь уже существует!');
     }
   })
     .then(() => User.create({
       name, about, avatar
     }))
-    .then((user) => res.send({ _id: user._id, email: user.email }))
+    .then((user) => res.send({ _id: user._id }))
     .catch(() => res.send({ message: 'Произошла ошибка' }));
 };
 
@@ -39,7 +44,8 @@ module.exports.updateProfile = (req, res) => {
     res.send({ data: user });
   })
   .catch((err) => {
-    console.log(`Ошибка: ${err}`)
+    console.log(`Ошибка: ${err}`);
+    throw new BadRequest(err.message);
   });
 };
 
@@ -50,6 +56,7 @@ module.exports.updateAvatar = (req, res) => {
     res.send({ data: user });
   })
   .catch((err) => {
-    console.log(`Ошибка: ${err}`)
+    console.log(`Ошибка: ${err}`);
+    throw new BadRequest(err.message);
   });
 };

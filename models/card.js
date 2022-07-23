@@ -8,7 +8,7 @@ const cardSchema = new mongoose.Schema({
     maxlength: 30,
   },
   link: {
-    type: url,
+    type: String,
     required: true,
   },
   owner: {

@@ -16,12 +16,17 @@ module.exports.getUserId = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const {
-    email, password, name, about, avatar,
+    name, about, avatar,
   } = req.body;
 
-  User.findOne({ email })
-    .then((hash) => User.create({
-      email, password: hash, name, about, avatar,
+  User.findOne({ name })
+  .then((user) => {
+    if (user) {
+      throw new Error('Такой пользователь уже существует!');
+    }
+  })
+    .then(() => User.create({
+      name, about, avatar
     }))
     .then((user) => res.send({ _id: user._id, email: user.email }))
     .catch(() => res.send({ message: 'Произошла ошибка' }));

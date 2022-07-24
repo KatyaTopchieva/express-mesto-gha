@@ -30,22 +30,27 @@ module.exports.createUser = (req, res) => {
     name, about, avatar,
   } = req.body;
 
-  User.findOne({ name })
+const checkLength = (value, fieldName) => {
+  if (value.length < 2) {
+    throw new BadRequest(fieldName + ' должно содержать не менее 2 символов');
+  }
+  if (value.length > 30) {
+    throw new BadRequest(fieldName + ' должно содержать не более 30 символов');
+  }
+}
+
+User.findOne({ name })
   .then((user) => {
     if (user) {
       throw new NotFound('Такой пользователь уже существует!');
     }
-    if (name.length < 2) {
-      throw new BadRequest('Имя должно содержать не менее 2 символов');
-    }
-    if (name.length > 30) {
-      throw new BadRequest('Имя должно содержать не более 30 символов');
-    }
+    checkLength(name, "Имя");
+    checkLength(about, "Описание");
   })
     .then(() => User.create({
       name, about, avatar,
     }))
-    .then((user) => res.send({ _id: user._id }))
+    .then((user) => res.send(user))
     .catch((e) => res.status(e.statusCode).send({ message: e.message }));
 };
 

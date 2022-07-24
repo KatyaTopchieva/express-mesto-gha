@@ -44,8 +44,8 @@ User.findOne({ name })
     if (user) {
       throw new NotFound('Такой пользователь уже существует!');
     }
-    checkLength(name, "Имя");
     checkLength(about, "Описание");
+    checkLength(name, "Имя");
   })
     .then(() => User.create({
       name, about, avatar,

@@ -24,9 +24,9 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  const { id } = req.params;
+  const { cardId } = req.params;
 
-  Card.findById(id)
+  Card.findById(cardId)
   .then((card) => {
     if (!card) {
       throw new NotFound('Такой карточки не существует!');
@@ -34,7 +34,7 @@ module.exports.deleteCard = (req, res) => {
     if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) {
       throw new BadRequest('Невозможно удалить данную карточку');
     }
-    return Card.findByIdAndRemove(id);
+    return Card.findByIdAndRemove(cardId);
   })
     .then((card) => res.send({ data: card }))
     .catch((err) => {

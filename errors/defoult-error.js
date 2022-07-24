@@ -1,8 +1,8 @@
-class defoultError extends Error {
+class DefoultError extends Error {
   constructor(message) {
     super(message);
     this.statusCode = 500;
   }
 }
 
-module.exports = defoultError;
+module.exports = DefoultError;

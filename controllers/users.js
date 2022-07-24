@@ -1,15 +1,19 @@
 const User = require('../models/user');
 const NotFound = require('../errors/not-found');
 const BadRequest = require('../errors/bad-request');
+const DefoultError = require('../errors/defoult-error');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then(users => res.send({ data: users }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      console.log(`Ошибка: ${err}`);
+      throw new DefoultError(err.message);
+    });
 };
 
 module.exports.getUserId = (req, res) => {
-  User.findById(req.user._id)//.select('+password')
+  User.findById(req.params.userId)//.select('+password')
     .then((user) => {
       if (!user) {
         throw new NotFound('Пользователь не найден');
@@ -17,6 +21,8 @@ module.exports.getUserId = (req, res) => {
       res.send({ data: user });
     })
     .catch(() => res.send({ message: 'Произошла ошибка' }));
+
+    //res.send({ message:  })
 };
 
 module.exports.createUser = (req, res) => {

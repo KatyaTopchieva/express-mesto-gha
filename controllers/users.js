@@ -48,7 +48,7 @@ User.findOne({ name })
     .then(() => User.create({
       name, about, avatar,
     }))
-    .then((user) => res.send(user))
+    .then((user) => res.send({id: user._id, name: user.name, about: user.about, avatar: user.avatar}))
     .catch((e) => res.status(e.statusCode).send({ message: e.message }));
 };
 

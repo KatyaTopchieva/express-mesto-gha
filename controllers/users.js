@@ -13,7 +13,7 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUserId = (req, res) => {
-  User.findById(req.params.userId)//.select('+password')
+  User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
         throw new NotFound('Пользователь не найден');
@@ -21,17 +21,15 @@ module.exports.getUserId = (req, res) => {
       res.send({ data: user });
     })
     .catch(() => res.send({ message: 'Произошла ошибка' }));
-
-    //res.send({ message:  })
 };
 
 module.exports.createUser = (req, res) => {
-  const {
-    name, about, avatar,
-  } = req.body;
+const name = req.body.name??'';
+const about = req.body.about??'';
+const avatar = req.body.avatar;
 
 const checkLength = (value, fieldName) => {
-  if (value.length < 2) {
+  if (!value && value.length < 2) {
     throw new BadRequest(fieldName + ' должно содержать не менее 2 символов');
   }
   if (value.length > 30) {
@@ -44,8 +42,8 @@ User.findOne({ name })
     if (user) {
       throw new NotFound('Такой пользователь уже существует!');
     }
-    checkLength(about, "Описание");
     checkLength(name, "Имя");
+    checkLength(about, "Описание");
   })
     .then(() => User.create({
       name, about, avatar,

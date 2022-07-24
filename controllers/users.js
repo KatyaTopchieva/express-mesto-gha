@@ -35,12 +35,18 @@ module.exports.createUser = (req, res) => {
     if (user) {
       throw new NotFound('Такой пользователь уже существует!');
     }
+    if (name.length < 2) {
+      throw new BadRequest('Имя должно содержать не менее 2 символов');
+    }
+    if (name.length > 30) {
+      throw new BadRequest('Имя должно содержать не более 30 символов');
+    }
   })
     .then(() => User.create({
       name, about, avatar,
     }))
     .then((user) => res.send({ _id: user._id }))
-    .catch(() => res.send({ message: 'Произошла ошибка' }));
+    .catch((e) => res.status(e.statusCode).send({ message: e.message }));
 };
 
 module.exports.updateProfile = (req, res) => {

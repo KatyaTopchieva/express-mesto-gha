@@ -29,7 +29,7 @@ const about = req.body.about??'';
 const avatar = req.body.avatar;
 
 const checkLength = (value, fieldName) => {
-  if (!value && value.length < 2) {
+  if (!value || value.length < 2) {
     throw new BadRequest(fieldName + ' должно содержать не менее 2 символов');
   }
   if (value.length > 30) {

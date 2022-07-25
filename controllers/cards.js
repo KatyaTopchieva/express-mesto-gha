@@ -100,7 +100,7 @@ module.exports.deletelikeCard = (req, res) => {
         res.send({ data: card });
       })
       .catch((err) => {
-        console.log(`Ошибка: ${err}`);
+        res.status(e.statusCode).send({ message: e.message });
       });
   }
   catch(e){

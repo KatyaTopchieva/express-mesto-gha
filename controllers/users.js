@@ -23,7 +23,7 @@ module.exports.getUserId = (req, res) => {
       if (!user) {
         throw new NotFound('Пользователь не найден');
       }
-      res.send({ data: user });
+      res.send(user);
     })
     .catch((e) => res.status(e.statusCode).send({ message: e.message }));
   }

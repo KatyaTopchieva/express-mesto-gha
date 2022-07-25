@@ -46,7 +46,8 @@ module.exports.createUser = (req, res) => {
     User.findOne({ name })
     .then((user) => {
       if (user) {
-        throw new BadRequest('Такой пользователь уже существует!');
+        res.send({ data: user });
+        //throw new BadRequest('Такой пользователь уже существует!');
       }
     })
       .then(() => User.create({

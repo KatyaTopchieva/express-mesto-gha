@@ -56,20 +56,30 @@ module.exports.likeCard = (req, res) => {
     if(req.params.cardId.length !== 24) {
       throw new BadRequest('Некорректный id');
     }
-    Card.findByIdAndUpdate(
-      req.params.cardId,
-      { $addToSet: { likes: req.user._id } },
-      { new: true },
-    )
+
+    Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFound('Такой карточки не существует!');
+        throw new NotFound('Карточка не найдена');
       }
-      res.send({ data: card });
+      Card.findByIdAndUpdate(
+        req.params.cardId,
+        { $addToSet: { likes: req.user._id } },
+        { new: true },
+      )
+      .then((card) => {
+        if (!card) {
+          throw new NotFound('Такой карточки не существует!');
+        }
+        res.send({ data: card });
+      })
+      .catch((e) => {
+        res.status(e.statusCode).send({ message: e.message });
+      });
     })
-    .catch((err) => {
-      res.status(e.statusCode).send({ message: e.message });
-    });
+    .catch((e) => res.status(e.statusCode).send({ message: e.message }));
+
+
   }
   catch(e){
     res.status(e.statusCode).send({ message: e.message });

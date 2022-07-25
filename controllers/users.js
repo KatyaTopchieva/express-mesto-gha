@@ -46,13 +46,13 @@ module.exports.createUser = (req, res) => {
     User.findOne({ name })
     .then((user) => {
       if (user) {
-        throw new NotFound('Такой пользователь уже существует!');
+        throw new BadRequest('Такой пользователь уже существует!');
       }
     })
       .then(() => User.create({
         name, about, avatar,
       }))
-      .then((user) => res.send({id: user._id, name: user.name, about: user.about, avatar: user.avatar}))
+      .then((user) => res.send({_id: user._id, name: user.name, about: user.about, avatar: user.avatar}))
       .catch((e) => res.status(e.statusCode).send({ message: e.message }));
   }
   catch(e){

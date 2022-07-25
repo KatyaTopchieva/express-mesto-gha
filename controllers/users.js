@@ -52,12 +52,12 @@ module.exports.createUser = (req, res) => {
       .then(() => User.create({
         name, about, avatar,
       }))
-      .then((user) => res.send({ data: user }))
+      .then((user) => res.send({ data: {_id: user._id, name: user.name, about: user.about, avatar: user.avatar} }))
       .catch((e) =>
         {
           if(e.statusCode == 400) {
             res.send({ data: {
-              name, about, avatar, _id: userId,
+              _id: userId, name, about, avatar
             } });
             return;
           }

@@ -25,23 +25,28 @@ module.exports.getUserId = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-const name = req.body.name??'';
-const about = req.body.about??'';
-const avatar = req.body.avatar;
+  const name = req.body.name??'';
+  const about = req.body.about??'';
+  const avatar = req.body.avatar;
 
-User.findOne({ name })
-  .then((user) => {
-    if (user) {
-      throw new NotFound('Такой пользователь уже существует!');
-    }
+  try{
     checkLength(name, "Имя");
     checkLength(about, "Описание");
-  })
-    .then(() => User.create({
-      name, about, avatar,
-    }))
-    .then((user) => res.send({id: user._id, name: user.name, about: user.about, avatar: user.avatar}))
-    .catch((e) => res.status(e.statusCode).send({ message: e.message }));
+    User.findOne({ name })
+    .then((user) => {
+      if (user) {
+        throw new NotFound('Такой пользователь уже существует!');
+      }
+    })
+      .then(() => User.create({
+        name, about, avatar,
+      }))
+      .then((user) => res.send({id: user._id, name: user.name, about: user.about, avatar: user.avatar}))
+      .catch((e) => res.status(e.statusCode).send({ message: e.message }));
+  }
+  catch(e){
+    res.status(e.statusCode).send({ message: e.message });
+  }
 };
 
 module.exports.updateProfile = (req, res) => {
@@ -60,7 +65,7 @@ module.exports.updateProfile = (req, res) => {
     });
   }
   catch(e){
-    res.status(e.statusCode).send({ message: e.message })
+    res.status(e.statusCode).send({ message: e.message });
   }
 };
 

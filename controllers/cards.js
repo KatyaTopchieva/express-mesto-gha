@@ -9,7 +9,7 @@ module.exports.getCards = (req, res) => {
     .then((cards) => res.send({ data: cards }))
     .catch((err) => {
       console.log(`Ошибка: ${err}`);
-      throw new DefoultError(err.message);
+      throw new BadRequest(err.message);
     });
 };
 

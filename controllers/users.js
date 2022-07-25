@@ -2,7 +2,7 @@ const User = require('../models/user');
 const NotFound = require('../errors/not-found');
 const BadRequest = require('../errors/bad-request');
 const DefoultError = require('../errors/defoult-error');
-const { checkLength } = require('../utils/validation');
+const { checkLength, checkLink } = require('../utils/validation');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -17,7 +17,7 @@ module.exports.getUserId = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFound('Пользователь не найден');
+        throw new BadRequest('Пользователь не найден');
       }
       res.send({ data: user });
     })
@@ -32,6 +32,8 @@ module.exports.createUser = (req, res) => {
   try{
     checkLength(name, "Имя");
     checkLength(about, "Описание");
+    checkLink(link, "Ссылка");
+
     User.findOne({ name })
     .then((user) => {
       if (user) {

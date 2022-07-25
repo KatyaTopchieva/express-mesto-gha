@@ -19,7 +19,6 @@ module.exports.getUserId = (req, res) => {
       throw new BadRequest('Некорректный id');
     }
     User.findById(req.params.userId)
-    // .select('-__v')
     .then((user) => {
       if (!user) {
         throw new NotFound('Пользователь не найден');
@@ -53,7 +52,7 @@ module.exports.createUser = (req, res) => {
       .then(() => User.create({
         name, about, avatar,
       }))
-      .then((user) => res.send({ data: user }))
+      .then((user) => res.send(user))
       .catch((e) =>
         {
           if(e.statusCode == 400) {
@@ -82,7 +81,7 @@ module.exports.updateProfile = (req, res) => {
       upsert: true,
     })
     .then((user) => {
-      res.send({ data: user });
+      res.send(user);
     })
     .catch((err) => {
       console.log(`Ошибка: ${err}`);

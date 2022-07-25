@@ -30,14 +30,13 @@ module.exports.getUserId = (req, res) => {
   catch(e){
     res.status(e.statusCode).send({ message: e.message });
   }
-
 };
 
 module.exports.createUser = (req, res) => {
   const name = req.body.name??'';
   const about = req.body.about??'';
   const avatar = req.body.avatar??'';
-
+  let userId = "";
   try{
     checkLength(name, "Имя");
     checkLength(about, "Описание");
@@ -46,15 +45,24 @@ module.exports.createUser = (req, res) => {
     User.findOne({ name })
     .then((user) => {
       if (user) {
-        res.send({ data: user });
-        //throw new BadRequest('Такой пользователь уже существует!');
+        userId = user._id;
+        throw new BadRequest('Такой пользователь уже существует!');
       }
     })
       .then(() => User.create({
         name, about, avatar,
       }))
       .then((user) => res.send({ data: user }))
-      .catch((e) => res.status(e.statusCode).send({ message: e.message }));
+      .catch((e) =>
+        {
+          if(e.statusCode == 400) {
+            res.send({ data: {
+              name, about, avatar, _id: userId,
+            } });
+            return;
+          }
+          res.status(e.statusCode).send({ message: e.message });
+        });
   }
   catch(e){
     res.status(e.statusCode).send({ message: e.message });

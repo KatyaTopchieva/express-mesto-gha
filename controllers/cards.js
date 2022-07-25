@@ -2,6 +2,7 @@ const Card = require('../models/card');
 const NotFound = require('../errors/not-found');
 const BadRequest = require('../errors/bad-request');
 const DefoultError = require('../errors/defoult-error');
+const { checkLength } = require('../utils/validation');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -14,13 +15,19 @@ module.exports.getCards = (req, res) => {
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
-
+try{
+  checkLength(name, "Название");
   Card.create({ name, link, owner: req.user._id })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       console.log(`Ошибка: ${err}`);
       throw new BadRequest(err.message);
     });
+}
+catch(e){
+  res.status(e.statusCode).send({ message: e.message });
+}
+
 };
 
 module.exports.deleteCard = (req, res) => {

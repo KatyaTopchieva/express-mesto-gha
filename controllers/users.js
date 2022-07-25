@@ -6,7 +6,7 @@ const { checkLength, checkLink } = require('../utils/validation');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then(users => res.send({ data: users }))
+    .then(users => res.send(users))
     .catch((err) => {
       console.log(`Ошибка: ${err}`);
       throw new DefoultError(err.message);
@@ -23,7 +23,7 @@ module.exports.getUserId = (req, res) => {
       if (!user) {
         throw new NotFound('Пользователь не найден');
       }
-      res.send({ data: user });
+      res.send(user);
     })
     .catch((e) => res.status(e.statusCode).send({ message: e.message }));
   }

@@ -33,21 +33,29 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
+  try{
+    if(req.params.cardId.length !== 24) {
+      throw new BadRequest('Некорректный id');
+    }
 
-  Card.findById(cardId)
-    .then((card) => {
-      if (!card) {
-        throw new NotFound('Такой карточки не существует!');
-      }
-      if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) {
-        throw new BadRequest('Невозможно удалить данную карточку');
-      }
-      return Card.findByIdAndRemove(cardId);
-    })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      console.log(`Ошибка: ${err}`);
-    });
+    Card.findById(cardId)
+      .then((card) => {
+        if (!card) {
+          throw new NotFound('Такой карточки не существует!');
+        }
+        if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) {
+          throw new BadRequest('Невозможно удалить данную карточку');
+        }
+        return Card.findByIdAndRemove(cardId);
+      })
+      .then((card) => res.send({ data: card }))
+      .catch((e) => {
+        res.status(e.statusCode).send({ message: e.message });
+      });
+  }
+  catch(e){
+    res.status(e.statusCode).send({ message: e.message });
+  }
 };
 
 module.exports.likeCard = (req, res) => {

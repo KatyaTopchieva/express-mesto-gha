@@ -19,7 +19,7 @@ module.exports.getUserId = (req, res) => {
       throw new BadRequest('Некорректный id');
     }
     User.findById(req.params.userId)
-    .select('-__v')
+    // .select('-__v')
     .then((user) => {
       if (!user) {
         throw new NotFound('Пользователь не найден');

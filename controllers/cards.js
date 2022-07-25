@@ -1,7 +1,6 @@
 const Card = require('../models/card');
 const NotFound = require('../errors/not-found');
 const BadRequest = require('../errors/bad-request');
-const DefoultError = require('../errors/defoult-error');
 const { checkLength, checkLink } = require('../utils/validation');
 
 module.exports.getCards = (req, res) => {

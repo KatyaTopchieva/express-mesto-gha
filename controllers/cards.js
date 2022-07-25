@@ -15,21 +15,20 @@ module.exports.getCards = (req, res) => {
 module.exports.createCard = (req, res) => {
   const name = req.body.name??'';
   const link = req.body.link??'';
-try{
-  checkLength(name, "Название");
-  checkLink(link, "Ссылка");
+  try{
+    checkLength(name, "Название");
+    checkLink(link, "Ссылка");
 
-  Card.create({ name, link, owner: req.user._id })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      console.log(`Ошибка: ${err}`);
-      throw new BadRequest(err.message);
-    });
-}
-catch(e){
-  res.status(e.statusCode).send({ message: e.message });
-}
-
+    Card.create({ name, link, owner: req.user._id })
+      .then((card) => res.send({ data: card }))
+      .catch((err) => {
+        console.log(`Ошибка: ${err}`);
+        throw new BadRequest(err.message);
+      });
+  }
+  catch(e){
+    res.status(e.statusCode).send({ message: e.message });
+  }
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -78,28 +77,34 @@ module.exports.likeCard = (req, res) => {
       });
     })
     .catch((e) => res.status(e.statusCode).send({ message: e.message }));
+  }
+  catch(e){
+    res.status(e.statusCode).send({ message: e.message });
+  }
+};
 
-
+module.exports.deletelikeCard = (req, res) => {
+  try{
+    if(req.params.cardId.length !== 24) {
+      throw new BadRequest('Некорректный id');
+    }
+    Card.findByIdAndUpdate(
+        req.params.cardId,
+        { $pull: { likes: req.user._id } },
+        { new: true },
+      )
+      .then((card) => {
+        if (!card) {
+          throw new NotFound('Такой карточки не существует!');
+        }
+        res.send({ data: card });
+      })
+      .catch((err) => {
+        console.log(`Ошибка: ${err}`);
+      });
   }
   catch(e){
     res.status(e.statusCode).send({ message: e.message });
   }
 
-};
-
-module.exports.deletelikeCard = (req, res) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
-  )
-  .then((card) => {
-    if (!card) {
-      throw new NotFound('Такой карточки не существует!');
-    }
-    res.send({ data: card });
-  })
-  .catch((err) => {
-    console.log(`Ошибка: ${err}`);
-  });
 };

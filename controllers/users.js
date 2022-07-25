@@ -23,7 +23,7 @@ module.exports.getUserId = (req, res) => {
       if (!user) {
         throw new NotFound('Пользователь не найден');
       }
-      res.send({id: user._id, name: user.name, about: user.about, avatar: user.avatar});
+      res.send({ data: user });
     })
     .catch((e) => res.status(e.statusCode).send({ message: e.message }));
   }
@@ -52,7 +52,7 @@ module.exports.createUser = (req, res) => {
       .then(() => User.create({
         name, about, avatar,
       }))
-      .then((user) => res.send({_id: user._id, name: user.name, about: user.about, avatar: user.avatar}))
+      .then((user) => res.send({ data: user }))
       .catch((e) => res.status(e.statusCode).send({ message: e.message }));
   }
   catch(e){

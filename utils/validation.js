@@ -1,6 +1,4 @@
-const NotFound = require('../errors/not-found');
 const BadRequest = require('../errors/bad-request');
-const DefoultError = require('../errors/defoult-error');
 
 module.exports.checkLength = (value, fieldName) => {
   if (!value || value.length < 2) {
@@ -8,5 +6,11 @@ module.exports.checkLength = (value, fieldName) => {
   }
   if (value.length > 30) {
     throw new BadRequest(fieldName + ' должно содержать не более 30 символов');
+  }
+};
+
+module.exports.checkLink = (value, fieldName) => {
+  if (!value) {
+    throw new BadRequest(fieldName + ' является обязательной для заполнения');
   }
 };

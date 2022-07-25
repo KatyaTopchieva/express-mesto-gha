@@ -27,7 +27,7 @@ module.exports.getUserId = (req, res) => {
 module.exports.createUser = (req, res) => {
   const name = req.body.name??'';
   const about = req.body.about??'';
-  const avatar = req.body.avatar;
+  const avatar = req.body.avatar??'';
 
   try{
     checkLength(name, "Имя");
@@ -55,7 +55,11 @@ module.exports.updateProfile = (req, res) => {
   try{
     checkLength(name, "Имя");
     checkLength(about, "Описание");
-    User.findByIdAndUpdate(req.user._id, { name, about })
+    User.findByIdAndUpdate(req.user._id, { name, about }, {
+      new: true,
+      runValidators: true,
+      upsert: true,
+    })
     .then((user) => {
       res.send({ data: user });
     })
@@ -71,7 +75,12 @@ module.exports.updateProfile = (req, res) => {
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar },
+    {
+        new: true,
+        runValidators: true,
+        upsert: true,
+    })
   .then((user) => {
     res.send({ data: user });
   })

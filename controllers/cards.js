@@ -85,7 +85,7 @@ module.exports.likeCard = (req, res) => {
 
 module.exports.deletelikeCard = (req, res) => {
   try{
-    if(req.params.cardId.length !== 24) {
+    if(!req.params.cardId || req.params.cardId.length !== 24) {
       throw new BadRequest('Некорректный id');
     }
     Card.findByIdAndUpdate(
@@ -99,7 +99,7 @@ module.exports.deletelikeCard = (req, res) => {
         }
         res.send({ data: card });
       })
-      .catch((err) => {
+      .catch((e) => {
         res.status(e.statusCode).send({ message: e.message });
       });
   }

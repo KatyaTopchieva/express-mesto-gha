@@ -14,14 +14,23 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUserId = (req, res) => {
-  User.findById(req.params.userId)
+  try{
+    if(req.params.userId.length !== 24) {
+      throw new BadRequest('Некорректный id');
+    }
+    User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new BadRequest('Пользователь не найден');
+        throw new NotFound('Пользователь не найден');
       }
       res.send({ data: user });
     })
-    .catch(() => res.send({ message: 'Произошла ошибка' }));
+    .catch((e) => res.status(e.statusCode).send({ message: e.message }));
+  }
+  catch(e){
+    res.status(e.statusCode).send({ message: e.message });
+  }
+
 };
 
 module.exports.createUser = (req, res) => {
@@ -32,7 +41,7 @@ module.exports.createUser = (req, res) => {
   try{
     checkLength(name, "Имя");
     checkLength(about, "Описание");
-    checkLink(link, "Ссылка");
+    checkLink(avatar, "Ссылка");
 
     User.findOne({ name })
     .then((user) => {

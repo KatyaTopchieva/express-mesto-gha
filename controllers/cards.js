@@ -114,5 +114,4 @@ module.exports.deletelikeCard = (req, res) => {
   catch(e){
     res.status(e.statusCode).send({ message: e.message });
   }
-
 };

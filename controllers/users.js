@@ -2,101 +2,59 @@ const User = require('../models/user');
 const NotFound = require('../errors/not-found');
 const BadRequest = require('../errors/bad-request');
 const DefoultError = require('../errors/defoult-error');
-const { checkLength, checkLink } = require('../utils/validation');
+const { sendError } = require('../utils/error-handler');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then(users => res.send(users))
     .catch((err) => {
-      console.log(`Ошибка: ${err}`);
-      throw new DefoultError(err.message);
+      sendError(res, err);
     });
 };
 
 module.exports.getUserId = (req, res) => {
-  try {
-    if (req.params.userId.length !== 24) {
-      throw new BadRequest('Некорректный id');
+  User.findById(req.params.userId)
+  .then((user) => {
+    if (!user) {
+      throw new NotFound('Пользователь не найден');
     }
-    User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        throw new NotFound('Пользователь не найден');
-      }
-      res.status(200).send({ data: user });
-    })
-    .catch((e) => res.status(e.statusCode).send({ message: e.message }));
-  }
-  catch (e) {
-    res.status(e.statusCode).send({ message: e.message });
-  }
+    res.status(200).send({ data: user });
+  })
+  .catch((e) => sendError(res, e));
 };
 
 module.exports.createUser = (req, res) => {
-  const name = req.body.name??'';
-  const about = req.body.about??'';
-  const avatar = req.body.avatar??'';
-  let userId = "";
-  try {
-    checkLength(name, "Имя");
-    checkLength(about, "Описание");
-    checkLink(avatar, "Ссылка");
+  const { name, about, avatar } = req.body;
 
-    User.create({ name, about, avatar })
-      .then((user) => res.status(201).send({ data: user }))
-      .catch((e) =>
-        {
-          if (e.statusCode === 400) {
-            res.send({ data: {
-              _id: userId, name, about, avatar,
-            }});
-            return;
-          }
-          res.status(e.statusCode).send({ message: e.message });
-        });
-  }
-  catch (e) {
-    res.status(e.statusCode).send({ message: e.message });
-  }
+  User.create({ name, about, avatar })
+    .then((user) => res.status(201).send({ data: user }))
+    .catch((e) => sendError(res, e));
 };
 
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
-
-  try {
-    checkLength(name, "Имя");
-    checkLength(about, "Описание");
-    User.findByIdAndUpdate(req.user._id, { name, about }, {
-      new: true,
-      runValidators: true,
-      upsert: true,
-    })
+  User.findByIdAndUpdate(req.user._id, { name, about }, {
+    new: true,
+    runValidators: true,
+    upsert: false,
+  })
     .then((user) => {
       res.send({ data: user });
     })
-    .catch((err) => {
-      console.log(`Ошибка: ${err}`);
-      throw new BadRequest(err.message);
-    });
-  }
-  catch (e) {
-    res.status(e.statusCode).send({ message: e.message });
-  }
+    .catch((err) => sendError(res, err));
 };
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar },
-    {
-        new: true,
-        runValidators: true,
-        upsert: true,
-    })
-  .then((user) => {
-    res.send({ data: user });
+  User.findByIdAndUpdate(req.user._id, { avatar }, {
+    new: true,
+    runValidators: true,
+    upsert: false,
   })
-  .catch((err) => {
-    console.log(`Ошибка: ${err}`);
-    throw new BadRequest(err.message);
-  });
+    .then((user) => {
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      sendError(res, err);
+    });
 };

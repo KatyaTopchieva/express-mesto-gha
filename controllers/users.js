@@ -14,8 +14,8 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUserId = (req, res) => {
-  try{
-    if(req.params.userId.length !== 24) {
+  try {
+    if (req.params.userId.length !== 24) {
       throw new BadRequest('Некорректный id');
     }
     User.findById(req.params.userId)
@@ -27,7 +27,7 @@ module.exports.getUserId = (req, res) => {
     })
     .catch((e) => res.status(e.statusCode).send({ message: e.message }));
   }
-  catch(e){
+  catch (e) {
     res.status(e.statusCode).send({ message: e.message });
   }
 };
@@ -37,7 +37,7 @@ module.exports.createUser = (req, res) => {
   const about = req.body.about??'';
   const avatar = req.body.avatar??'';
   let userId = "";
-  try{
+  try {
     checkLength(name, "Имя");
     checkLength(about, "Описание");
     checkLink(avatar, "Ссылка");
@@ -53,16 +53,16 @@ module.exports.createUser = (req, res) => {
       .then((user) => res.status(201).send({ data: user }))
       .catch((e) =>
         {
-          if(e.statusCode == 400) {
+          if (e.statusCode == 400) {
             res.send({ data: {
-              _id: userId, name, about, avatar
-            } });
+              _id: userId, name, about, avatar,
+            }});
             return;
           }
           res.status(e.statusCode).send({ message: e.message });
         });
   }
-  catch(e){
+  catch(e) {
     res.status(e.statusCode).send({ message: e.message });
   }
 };
@@ -70,7 +70,7 @@ module.exports.createUser = (req, res) => {
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
 
-  try{
+  try {
     checkLength(name, "Имя");
     checkLength(about, "Описание");
     User.findByIdAndUpdate(req.user._id, { name, about }, {
@@ -86,7 +86,7 @@ module.exports.updateProfile = (req, res) => {
       throw new BadRequest(err.message);
     });
   }
-  catch(e){
+  catch(e) {
     res.status(e.statusCode).send({ message: e.message });
   }
 };

@@ -42,18 +42,19 @@ module.exports.createUser = (req, res) => {
     checkLength(about, "Описание");
     checkLink(avatar, "Ссылка");
 
-    User.findOne({ name })
-    .then((user) => {
-      if (user) {
-        userId = user._id;
-        throw new BadRequest('Такой пользователь уже существует!');
-      }
-    })
-      .then(() => User.create({ name, about, avatar }))
+    // User.findOne({ name })
+    // .then((user) => {
+    //   if (user) {
+    //     userId = user._id;
+    //     throw new BadRequest('Такой пользователь уже существует!');
+    //   }
+    // })
+      // .then(() =>
+    User.create({ name, about, avatar })
       .then((user) => res.status(201).send({ data: user }))
       .catch((e) =>
         {
-          if (e.statusCode == 400) {
+          if (e.statusCode === 400) {
             res.send({ data: {
               _id: userId, name, about, avatar,
             }});
@@ -62,7 +63,7 @@ module.exports.createUser = (req, res) => {
           res.status(e.statusCode).send({ message: e.message });
         });
   }
-  catch(e) {
+  catch (e) {
     res.status(e.statusCode).send({ message: e.message });
   }
 };

@@ -15,7 +15,7 @@ module.exports.getCards = (req, res) => {
 module.exports.createCard = (req, res) => {
   const name = req.body.name??'';
   const link = req.body.link??'';
-  try{
+  try {
     checkLength(name, "Название");
     checkLink(link, "Ссылка");
 
@@ -26,15 +26,15 @@ module.exports.createCard = (req, res) => {
         throw new BadRequest(err.message);
       });
   }
-  catch(e){
+  catch (e) {
     res.status(e.statusCode).send({ message: e.message });
   }
 };
 
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
-  try{
-    if(req.params.cardId.length !== 24) {
+  try {
+    if (req.params.cardId.length !== 24) {
       throw new BadRequest('Некорректный id');
     }
 
@@ -53,14 +53,14 @@ module.exports.deleteCard = (req, res) => {
         res.status(e.statusCode).send({ message: e.message });
       });
   }
-  catch(e){
+  catch (e) {
     res.status(e.statusCode).send({ message: e.message });
   }
 };
 
 module.exports.likeCard = (req, res) => {
-  try{
-    if(req.params.cardId.length !== 24) {
+  try {
+    if (req.params.cardId.length !== 24) {
       throw new BadRequest('Некорректный id');
     }
 
@@ -86,21 +86,21 @@ module.exports.likeCard = (req, res) => {
     })
     .catch((e) => res.status(e.statusCode).send({ message: e.message }));
   }
-  catch(e){
+  catch (e) {
     res.status(e.statusCode).send({ message: e.message });
   }
 };
 
 module.exports.deletelikeCard = (req, res) => {
-  try{
-    if(!req.params.cardId || req.params.cardId.length !== 24) {
+  try {
+    if (!req.params.cardId || req.params.cardId.length !== 24) {
       throw new BadRequest('Некорректный id');
     }
     Card.findByIdAndUpdate(
-        req.params.cardId,
-        { $pull: { likes: req.user._id } },
-        { new: true },
-      )
+      req.params.cardId,
+      { $pull: { likes: req.user._id } },
+      { new: true },
+    )
       .then((card) => {
         if (!card) {
           throw new NotFound('Такой карточки не существует!');
@@ -111,7 +111,7 @@ module.exports.deletelikeCard = (req, res) => {
         res.status(e.statusCode).send({ message: e.message });
       });
   }
-  catch(e){
+  catch (e) {
     res.status(e.statusCode).send({ message: e.message });
   }
 };

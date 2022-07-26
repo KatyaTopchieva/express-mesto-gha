@@ -18,7 +18,7 @@ module.exports.sendError = (res, err) => {
   console.log(`Ошибка: ${err}`);
   const isNotFound = err.message.indexOf('not found') > -1;
   const isCastError = err.message.indexOf('Cast to ObjectId failed') > -1;
-  const isValidationError = err.message.indexOf('ValidationError') > -1;
+  const isValidationError = err.message.indexOf('validation') > -1;
   if (isNotFound || (err.statusCode && err.statusCode === 404)) {
     this.sendServerMessage(res, 404, err.message);
     return;

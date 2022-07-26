@@ -51,10 +51,6 @@ module.exports.createUser = (req, res) => {
     })
       .then(() => User.create({ name, about, avatar }))
       .then((user) => res.status(201).send({ data: user }))
-      // User.create({
-      //   name, about, avatar,
-      // }))
-      // .then((user) => res.send({ data: user }))
       .catch((e) =>
         {
           if(e.statusCode == 400) {

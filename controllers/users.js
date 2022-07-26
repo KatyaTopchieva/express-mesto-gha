@@ -42,14 +42,6 @@ module.exports.createUser = (req, res) => {
     checkLength(about, "Описание");
     checkLink(avatar, "Ссылка");
 
-    // User.findOne({ name })
-    // .then((user) => {
-    //   if (user) {
-    //     userId = user._id;
-    //     throw new BadRequest('Такой пользователь уже существует!');
-    //   }
-    // })
-      // .then(() =>
     User.create({ name, about, avatar })
       .then((user) => res.status(201).send({ data: user }))
       .catch((e) =>
@@ -87,7 +79,7 @@ module.exports.updateProfile = (req, res) => {
       throw new BadRequest(err.message);
     });
   }
-  catch(e) {
+  catch (e) {
     res.status(e.statusCode).send({ message: e.message });
   }
 };

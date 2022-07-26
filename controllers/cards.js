@@ -2,13 +2,14 @@ const Card = require('../models/card');
 const NotFound = require('../errors/not-found');
 const BadRequest = require('../errors/bad-request');
 const { checkLength, checkLink } = require('../utils/validation');
+const { sendBadMessage, sendNodFoundMessage, sendDefaultMessage } = require('../utils/error-handler');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
     .catch((err) => {
       console.log(`Ошибка: ${err}`);
-      throw new BadRequest(err.message);
+      sendBadMessage(res, err.message);
     });
 };
 
@@ -23,7 +24,7 @@ module.exports.createCard = (req, res) => {
       .then((card) => res.send({ data: card }))
       .catch((err) => {
         console.log(`Ошибка: ${err}`);
-        throw new BadRequest(err.message);
+        sendBadMessage(res, err.message);
       });
   }
   catch (e) {
@@ -34,9 +35,9 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
   try {
-    if (req.params.cardId.length !== 24) {
-      throw new BadRequest('Некорректный id');
-    }
+    // if (req.params.cardId.length !== 24) {
+    //   throw new BadRequest('Некорректный id');
+    // }
 
     Card.findById(cardId)
       .then((card) => {

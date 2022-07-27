@@ -1,12 +1,10 @@
 const User = require('../models/user');
 const NotFound = require('../errors/not-found');
-const BadRequest = require('../errors/bad-request');
-const DefoultError = require('../errors/defoult-error');
 const { sendError } = require('../utils/error-handler');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then(users => res.send(users))
+    .then((users) => res.send(users))
     .catch((err) => {
       sendError(res, err);
     });
@@ -14,13 +12,13 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUserId = (req, res) => {
   User.findById(req.params.userId)
-  .then((user) => {
-    if (!user) {
-      throw new NotFound('Пользователь не найден');
-    }
-    res.status(200).send({ data: user });
-  })
-  .catch((e) => sendError(res, e));
+    .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь не найден');
+      }
+      res.status(200).send({ data: user });
+    })
+    .catch((e) => sendError(res, e));
 };
 
 module.exports.createUser = (req, res) => {

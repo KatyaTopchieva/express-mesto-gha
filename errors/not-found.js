@@ -3,6 +3,6 @@ class NotFound extends Error {
     super(message);
     this.statusCode = 404;
   }
-};
+}
 
 module.exports = NotFound;

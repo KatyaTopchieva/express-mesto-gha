@@ -37,6 +37,9 @@ module.exports.updateProfile = (req, res) => {
     upsert: false,
   })
     .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь не найден');
+      }
       res.send({ data: user });
     })
     .catch((err) => sendError(res, err));
@@ -50,6 +53,9 @@ module.exports.updateAvatar = (req, res) => {
     upsert: false,
   })
     .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь не найден');
+      }
       res.send({ data: user });
     })
     .catch((err) => {

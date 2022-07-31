@@ -57,10 +57,10 @@ const createCardValidation = celebrate({
       }
       return value;
     }),
-    owner: Joi.string().required().length(24).hex(),
-    likes: Joi.array(),
-    createdAt: Joi.date(),
-  }),
+    // owner: Joi.string().required().length(24).hex(),
+    // likes: Joi.array(),
+    // createdAt: Joi.date(),
+  }).options({ stripUnknown: true }),
 });
 
 const cardIdValidation = celebrate({

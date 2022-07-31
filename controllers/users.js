@@ -1,5 +1,8 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFound = require('../errors/not-found');
+const BadRequest = require('../errors/bad-request');
 const { sendError } = require('../utils/error-handler');
 
 module.exports.getUsers = (req, res) => {
@@ -22,9 +25,14 @@ module.exports.getUserId = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar })
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => User.create({
+      name: req.body.name,
+      about: req.body.about,
+      avatar: req.body.avatar,
+      email: req.body.email,
+      password: hash,
+    }))
     .then((user) => res.status(201).send({ data: user }))
     .catch((e) => sendError(res, e));
 };
@@ -61,4 +69,32 @@ module.exports.updateAvatar = (req, res) => {
     .catch((err) => {
       sendError(res, err);
     });
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new BadRequest('Переданы некорректные данные');
+  }
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
+};
+
+module.exports.getCurrentUser = (req, res, next) => {
+  const { _id } = req.user;
+  User.findById(_id).then((user) => {
+    if (!user) {
+      return next(new NotFound('Пользователь не найден.'));
+    }
+
+    return res.status(200).send(user);
+  }).catch(next);
 };

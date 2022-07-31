@@ -6,6 +6,10 @@ module.exports.sendBadMessage = (res, message) => {
   this.sendServerMessage(res, 400, message);
 };
 
+module.exports.sendBadAuthMessage = (res, message) => {
+  this.sendServerMessage(res, 401, message);
+};
+
 module.exports.sendNodFoundMessage = (res, message) => {
   this.sendServerMessage(res, 404, message);
 };

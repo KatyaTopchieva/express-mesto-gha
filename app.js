@@ -7,6 +7,8 @@ const pathNotFound = require('./routes/not-found');
 const { createUser, login } = require('./controllers/users');
 const { signUp, signIn } = require('./utils/validations');
 const auth = require('./middlewares/auth');
+const { errors } = require('celebrate');
+const mainErrorHandler = require('./middlewares/main-error-handler');
 
 const { PORT = 3000 } = process.env;
 
@@ -26,6 +28,9 @@ app.use(pathNotFound);
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
+
+app.use(errors());
+app.use(mainErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

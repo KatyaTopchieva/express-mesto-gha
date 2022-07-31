@@ -24,6 +24,17 @@ module.exports.getUserId = (req, res) => {
     .catch((e) => sendError(res, e));
 };
 
+const getSipleUser = (user) => ({
+  data:
+      {
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        _id: user._id,
+        email: user.email,
+      },
+});
+
 module.exports.createUser = (req, res) => {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
@@ -33,7 +44,7 @@ module.exports.createUser = (req, res) => {
       email: req.body.email,
       password: hash,
     }))
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) => res.status(201).send(getSipleUser(user)))
     .catch((e) => sendError(res, e));
 };
 
@@ -48,7 +59,7 @@ module.exports.updateProfile = (req, res) => {
       if (!user) {
         throw new NotFound('Пользователь не найден');
       }
-      res.send({ data: user });
+      res.send(getSipleUser(user));
     })
     .catch((err) => sendError(res, err));
 };

@@ -51,15 +51,12 @@ const updateAvatarValidation = celebrate({
 const createCardValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().custom((value) => {
+    link: Joi.string().required().custom((value) => {
       if (!validator.isURL(value, { require_protocol: true })) {
         throw new BadRequest('Неверный формат URL адреса');
       }
       return value;
     }),
-    // owner: Joi.string().required().length(24).hex(),
-    // likes: Joi.array(),
-    // createdAt: Joi.date(),
   }).options({ stripUnknown: true }),
 });
 

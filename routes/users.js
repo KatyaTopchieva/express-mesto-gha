@@ -15,8 +15,8 @@ const {
 } = require('../utils/validations');
 
 router.get('/users', getUsers);
-router.get('/users/:userId', userIdValidation, getUserId);
 router.get('/users/me', getCurrentUser);
+router.get('/users/:userId', userIdValidation, getUserId);
 router.patch('/users/me', updateProfileValidation, updateProfile);
 router.patch('/users/me/avatar', updateAvatarValidation, updateAvatar);
 

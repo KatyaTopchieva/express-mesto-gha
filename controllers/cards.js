@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const NotFound = require('../errors/not-found');
-const BadRequest = require('../errors/bad-request');
+const Forbidden = require('../errors/forbidden-error');
 const { sendError } = require('../utils/error-handler');
 
 module.exports.getCards = (req, res) => {
@@ -28,7 +28,7 @@ module.exports.deleteCard = (req, res) => {
         throw new NotFound('Такой карточки не существует!');
       }
       if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) {
-        throw new BadRequest('Невозможно удалить данную карточку');
+        throw new Forbidden('Невозможно удалить данную карточку');
       }
       return Card.findByIdAndRemove(cardId);
     })

@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFound = require('../errors/not-found');
 const BadRequest = require('../errors/bad-request');
+const ConflictError = require('../errors/conflict-error');
 const { sendError } = require('../utils/error-handler');
 
 module.exports.getUsers = (req, res) => {
@@ -36,7 +37,13 @@ const getSipleUser = (user) => ({
 });
 
 module.exports.createUser = (req, res) => {
-  bcrypt.hash(req.body.password, 10)
+  const { email } = req.body;
+  User.findOne({ email }).then((user) => {
+    if (user) {
+      throw new ConflictError(`Пользователь с ${email} уже существует.`);
+    }
+    return bcrypt.hash(req.body.password, 10);
+  })
     .then((hash) => User.create({
       name: req.body.name,
       about: req.body.about,

@@ -28,6 +28,11 @@ module.exports.sendError = (res, err) => {
     return;
   }
 
+  if (err.statusCode && err.statusCode === 409) {
+    this.sendServerMessage(res, 409, err.message);
+    return;
+  }
+
   if (isCastError || isValidationError || (err.statusCode && err.statusCode === 400)) {
     this.sendServerMessage(res, 400, err.message);
     return;

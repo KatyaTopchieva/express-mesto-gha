@@ -27,7 +27,10 @@ module.exports.sendError = (res, err) => {
     this.sendServerMessage(res, 404, err.message);
     return;
   }
-
+  if (err.statusCode && err.statusCode === 403) {
+    this.sendServerMessage(res, 403, err.message);
+    return;
+  }
   if (err.statusCode && err.statusCode === 409) {
     this.sendServerMessage(res, 409, err.message);
     return;

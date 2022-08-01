@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const NotFound = require('../errors/not-found');
 
-router.all('*', (req, res) => {
+router.all('*', () => {
   throw new NotFound('Ресурс не найден');
 });
 

@@ -1,26 +1,25 @@
 const Card = require('../models/card');
 const NotFound = require('../errors/not-found');
 const Forbidden = require('../errors/forbidden-error');
-const { sendError } = require('../utils/error-handler');
+const { isCastError } = require('../utils/error-handler');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => {
-      sendError(res, err.message);
-    });
+    .catch((err) => next(err));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      sendError(res, err);
+      isCastError(res, err, next);
+      next(err);
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findById(cardId)
     .then((card) => {
@@ -33,12 +32,10 @@ module.exports.deleteCard = (req, res) => {
       return Card.findByIdAndRemove(cardId);
     })
     .then((card) => res.send({ data: card }))
-    .catch((e) => {
-      sendError(res, e);
-    });
+    .catch((e) => next(e));
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -50,12 +47,10 @@ module.exports.likeCard = (req, res) => {
       }
       res.send({ data: card });
     })
-    .catch((e) => {
-      sendError(res, e);
-    });
+    .catch((e) => next(e));
 };
 
-module.exports.deletelikeCard = (req, res) => {
+module.exports.deletelikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -67,7 +62,5 @@ module.exports.deletelikeCard = (req, res) => {
       }
       res.send({ data: card });
     })
-    .catch((e) => {
-      sendError(res, e);
-    });
+    .catch((e) => next(e));
 };

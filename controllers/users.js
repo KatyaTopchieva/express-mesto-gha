@@ -4,17 +4,14 @@ const User = require('../models/user');
 const NotFound = require('../errors/not-found');
 const BadRequest = require('../errors/bad-request');
 const ConflictError = require('../errors/conflict-error');
-const { sendError } = require('../utils/error-handler');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => {
-      sendError(res, err);
-    });
+    .catch(next);
 };
 
-module.exports.getUserId = (req, res) => {
+module.exports.getUserId = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
@@ -22,7 +19,7 @@ module.exports.getUserId = (req, res) => {
       }
       res.status(200).send({ data: user });
     })
-    .catch((e) => sendError(res, e));
+    .catch(next);
 };
 
 const getSipleUser = (user) => ({
@@ -36,7 +33,7 @@ const getSipleUser = (user) => ({
       },
 });
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { email } = req.body;
   User.findOne({ email }).then((user) => {
     if (user) {
@@ -52,10 +49,10 @@ module.exports.createUser = (req, res) => {
       password: hash,
     }))
     .then((user) => res.status(201).send(getSipleUser(user)))
-    .catch((e) => sendError(res, e));
+    .catch((e) => next(e));
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true,
@@ -67,10 +64,10 @@ module.exports.updateProfile = (req, res) => {
       }
       res.send(getSipleUser(user));
     })
-    .catch((err) => sendError(res, err));
+    .catch((err) => next(err));
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true,
@@ -82,12 +79,10 @@ module.exports.updateAvatar = (req, res) => {
       }
       res.send({ data: user });
     })
-    .catch((err) => {
-      sendError(res, err);
-    });
+    .catch((err) => next(err));
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
     throw new BadRequest('Переданы некорректные данные');
@@ -97,11 +92,7 @@ module.exports.login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
     })
-    .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
-    });
+    .catch(next);
 };
 
 module.exports.getCurrentUser = (req, res, next) => {

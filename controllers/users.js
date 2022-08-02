@@ -23,7 +23,6 @@ module.exports.getUserId = (req, res, next) => {
     })
     .catch((err) => {
       isCastError(res, err, next);
-      next(err);
     });
 };
 
@@ -56,7 +55,6 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.status(201).send(getSipleUser(user)))
     .catch((err) => {
       isValidationError(res, err, next);
-      next(err);
     });
 };
 
@@ -74,7 +72,6 @@ module.exports.updateProfile = (req, res, next) => {
     })
     .catch((err) => {
       isValidationError(res, err, next);
-      next(err);
     });
 };
 
@@ -92,7 +89,6 @@ module.exports.updateAvatar = (req, res, next) => {
     })
     .catch((err) => {
       isValidationError(res, err, next);
-      next(err);
     });
 };
 

@@ -5,6 +5,8 @@ module.exports.isValidationError = (res, err, next) => {
   const isValidationError = err.message.indexOf('validation') > -1 || err.message.indexOf('Validation') > -1;
   if (isValidationError || (err.statusCode && err.statusCode === 400)) {
     next(new BadRequest(err.message));
+  } else {
+    next(err);
   }
 };
 
@@ -13,5 +15,7 @@ module.exports.isCastError = (res, err, next) => {
   const isCastError = err.message.indexOf('Cast to ObjectId failed') > -1;
   if (isCastError) {
     next(new BadRequest(err.message));
+  } else {
+    next(err);
   }
 };

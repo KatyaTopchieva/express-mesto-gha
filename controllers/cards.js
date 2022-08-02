@@ -13,10 +13,7 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      isCastError(res, err, next);
-      next(err);
-    });
+    .catch((e) => next(e));
 };
 
 module.exports.deleteCard = (req, res, next) => {
@@ -32,7 +29,10 @@ module.exports.deleteCard = (req, res, next) => {
       return Card.findByIdAndRemove(cardId);
     })
     .then((card) => res.send({ data: card }))
-    .catch((e) => next(e));
+    .catch((err) => {
+      isCastError(res, err, next);
+      next(err);
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -47,7 +47,10 @@ module.exports.likeCard = (req, res, next) => {
       }
       res.send({ data: card });
     })
-    .catch((e) => next(e));
+    .catch((err) => {
+      isCastError(res, err, next);
+      next(err);
+    });
 };
 
 module.exports.deletelikeCard = (req, res, next) => {
@@ -62,5 +65,8 @@ module.exports.deletelikeCard = (req, res, next) => {
       }
       res.send({ data: card });
     })
-    .catch((e) => next(e));
+    .catch((err) => {
+      isCastError(res, err, next);
+      next(err);
+    });
 };

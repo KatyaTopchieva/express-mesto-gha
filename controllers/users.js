@@ -5,6 +5,7 @@ const NotFound = require('../errors/not-found');
 const BadRequest = require('../errors/bad-request');
 const ConflictError = require('../errors/conflict-error');
 const UnauthorizedError = require('../errors/unauthorized-error');
+const { isCastError, isValidationError } = require('../utils/error-handler');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -20,7 +21,10 @@ module.exports.getUserId = (req, res, next) => {
       }
       res.status(200).send({ data: user });
     })
-    .catch(next);
+    .catch((err) => {
+      isCastError(res, err, next);
+      next(err);
+    });
 };
 
 const getSipleUser = (user) => ({
@@ -50,7 +54,10 @@ module.exports.createUser = (req, res, next) => {
       password: hash,
     }))
     .then((user) => res.status(201).send(getSipleUser(user)))
-    .catch((e) => next(e));
+    .catch((err) => {
+      isValidationError(res, err, next);
+      next(err);
+    });
 };
 
 module.exports.updateProfile = (req, res, next) => {
@@ -65,7 +72,10 @@ module.exports.updateProfile = (req, res, next) => {
       }
       res.send(getSipleUser(user));
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      isValidationError(res, err, next);
+      next(err);
+    });
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -80,7 +90,10 @@ module.exports.updateAvatar = (req, res, next) => {
       }
       res.send({ data: user });
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      isValidationError(res, err, next);
+      next(err);
+    });
 };
 
 module.exports.login = (req, res, next) => {

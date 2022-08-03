@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const NotFound = require('../errors/not-found');
 const Forbidden = require('../errors/forbidden-error');
+const BadRequest = require('../errors/bad-request');
 const { isCastError, isValidationError } = require('../utils/error-handler');
 
 module.exports.getCards = (req, res, next) => {
@@ -13,8 +14,12 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
-    .catch((e) => {
-      isValidationError(res, e, next);
+    .catch((err) => {
+      if (isValidationError(res, err)) {
+        next(new BadRequest(err.message));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -32,7 +37,11 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      isCastError(res, err, next);
+      if (isCastError(res, err)) {
+        next(new BadRequest(err.message));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -49,7 +58,11 @@ module.exports.likeCard = (req, res, next) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      isCastError(res, err, next);
+      if (isCastError(res, err)) {
+        next(new BadRequest(err.message));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -66,6 +79,10 @@ module.exports.deletelikeCard = (req, res, next) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      isCastError(res, err, next);
+      if (isCastError(res, err)) {
+        next(new BadRequest(err.message));
+      } else {
+        next(err);
+      }
     });
 };

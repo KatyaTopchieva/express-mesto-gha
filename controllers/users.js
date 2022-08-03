@@ -22,7 +22,11 @@ module.exports.getUserId = (req, res, next) => {
       res.status(200).send({ data: user });
     })
     .catch((err) => {
-      isCastError(res, err, next);
+      if (isCastError(res, err)) {
+        next(new BadRequest(err.message));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -54,7 +58,11 @@ module.exports.createUser = (req, res, next) => {
     }))
     .then((user) => res.status(201).send(getSipleUser(user)))
     .catch((err) => {
-      isValidationError(res, err, next);
+      if (isValidationError(res, err)) {
+        next(new BadRequest(err.message));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -71,7 +79,11 @@ module.exports.updateProfile = (req, res, next) => {
       res.send(getSipleUser(user));
     })
     .catch((err) => {
-      isValidationError(res, err, next);
+      if (isValidationError(res, err)) {
+        next(new BadRequest(err.message));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -88,7 +100,11 @@ module.exports.updateAvatar = (req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      isValidationError(res, err, next);
+      if (isValidationError(res, err)) {
+        next(new BadRequest(err.message));
+      } else {
+        next(err);
+      }
     });
 };
 
